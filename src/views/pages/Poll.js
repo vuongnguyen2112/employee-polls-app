@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { handleSubmitAnswer } from '../../redux/pollSlice';
-import { useLocation, useNavigate } from 'react-router-dom';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { selectLogin } from '../../redux/loginSlice';
-import { ANSWER_OPTION } from '../../constant';
-import { checkIfAnswered } from '../../utils/common';
-import { OptionBox } from '../components/OptionBox';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { handleSubmitAnswer } from "../../redux/pollSlice";
+import { useLocation, useNavigate } from "react-router-dom";
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { selectLogin } from "../../redux/loginSlice";
+import { ANSWER_OPTION } from "../../constant";
+import { checkIfAnswered } from "../../utils/common";
+import { OptionBox } from "../components/OptionBox";
 
 const Poll = () => {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const Poll = () => {
   const users = useSelector((state) => state.users.users);
   const authedUser = useSelector(selectLogin);
   const locationPathname = useLocation().pathname;
-  const questionId = locationPathname.split('/')[2];
+  const questionId = locationPathname.split("/")[2];
   const [currentQuestion, setCurrentQuestion] = useState({});
   const [noUserSelectOption1, setNoUserSelectOption1] = useState(0);
   const [noUserSelectOption2, setNoUserSelectOption2] = useState(0);
@@ -25,34 +25,55 @@ const Poll = () => {
   const [percent1, setPercent1] = useState(0);
   const [percent2, setPercent2] = useState(0);
   const isAnswered =
-    !!Object.keys(currentQuestion).length && checkIfAnswered(currentQuestion, authedUser);
+    !!Object.keys(currentQuestion).length &&
+    checkIfAnswered(currentQuestion, authedUser);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!allQuestions[questionId]) {
-      navigate('/404');
+      navigate("/404");
     }
     setCurrentQuestion(allQuestions[questionId]);
-    setNoUserSelectOption1(allQuestions[questionId]?.optionOne?.votes?.length || 0);
-    setNoUserSelectOption2(allQuestions[questionId]?.optionTwo?.votes?.length || 0);
+    setNoUserSelectOption1(
+      allQuestions[questionId]?.optionOne?.votes?.length || 0
+    );
+    setNoUserSelectOption2(
+      allQuestions[questionId]?.optionTwo?.votes?.length || 0
+    );
     setTotalVotes(
       (allQuestions[questionId]?.optionOne?.votes?.length || 0) +
-        (allQuestions[questionId]?.optionTwo?.votes?.length || 0),
+        (allQuestions[questionId]?.optionTwo?.votes?.length || 0)
     );
     setPercent1(Math.round((noUserSelectOption1 / totalVotes) * 100));
     setPercent2(Math.round((noUserSelectOption2 / totalVotes) * 100));
-  }, [allQuestions, currentQuestion, navigate, noUserSelectOption1, noUserSelectOption2, questionId, totalVotes]);
+  }, [
+    allQuestions,
+    currentQuestion,
+    navigate,
+    noUserSelectOption1,
+    noUserSelectOption2,
+    questionId,
+    totalVotes,
+  ]);
 
   const selectOptionOne = (e) => {
     e.preventDefault();
     dispatch(
-      handleSubmitAnswer({ qid: currentQuestion.id, answer: ANSWER_OPTION.OPTION_ONE, authedUser }),
+      handleSubmitAnswer({
+        qid: currentQuestion.id,
+        answer: ANSWER_OPTION.OPTION_ONE,
+        authedUser,
+      })
     );
   };
   const selectOptionTwo = (e) => {
     e.preventDefault();
     dispatch(
-      handleSubmitAnswer({ qid: currentQuestion.id, answer: ANSWER_OPTION.OPTION_TWO, authedUser }),
+      handleSubmitAnswer({
+        qid: currentQuestion.id,
+        answer: ANSWER_OPTION.OPTION_TWO,
+        authedUser,
+      })
     );
   };
 
@@ -75,12 +96,14 @@ const Poll = () => {
       <Typography variant="h3" sx={{ my: 5 }}>
         Would you rather
       </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 4 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", gap: 4 }}>
         <OptionBox
           loading={loading}
           isAnswered={isAnswered}
           clickHandler={selectOptionOne}
-          isSelected={users[authedUser]?.answers[questionId] === ANSWER_OPTION.OPTION_ONE}
+          isSelected={
+            users[authedUser]?.answers[questionId] === ANSWER_OPTION.OPTION_ONE
+          }
         >
           {currentQuestion.optionOne?.text}
         </OptionBox>
@@ -88,36 +111,51 @@ const Poll = () => {
           loading={loading}
           isAnswered={isAnswered}
           clickHandler={selectOptionTwo}
-          isSelected={users[authedUser]?.answers[questionId] === ANSWER_OPTION.OPTION_TWO}
+          isSelected={
+            users[authedUser]?.answers[questionId] === ANSWER_OPTION.OPTION_TWO
+          }
         >
           {currentQuestion.optionTwo?.text}
         </OptionBox>
       </Box>
-      {isAnswered && (
-        <Box sx={{ display: 'flex', mt: 2, border: '1px solid grey' }}>
-          <Box
-            sx={{
-              width: `${percent1}%`,
-              backgroundColor: 'blue',
-            }}
-          >
-            {!!noUserSelectOption1 && (
-              <Typography sx={{ p: 1 }} variant="body1" color="white">
-                {noUserSelectOption1}/{totalVotes} votes,
-                {percent1}%
-              </Typography>
-            )}
-          </Box>
-          <Box sx={{ flex: 1, backgroundColor: 'green' }}>
-            {!!noUserSelectOption2 && (
-              <Typography sx={{ p: 1 }} variant="body1" color="initial">
-                {noUserSelectOption2}/{totalVotes} votes,
-                {percent2}%
-              </Typography>
-            )}
-          </Box>
+      <Box sx={{ display: "flex", mt: 2, gap: 4, justifyContent: "center" }}>
+        <Box
+          sx={{
+            width: `200px`,
+            backgroundColor: "blue",
+            borderRadius: '15px'
+          }}
+        >
+          {isAnswered && (
+            <div>
+              {(
+                <Typography sx={{ p: 1 }} variant="body1" color="white">
+                  {noUserSelectOption1}/{totalVotes} votes,
+                  {percent1}%
+                </Typography>
+              )}
+            </div>
+          )}
         </Box>
-      )}
+        <Box
+          sx={{
+            width: `200px`,
+            backgroundColor: "green",
+            borderRadius: '15px'
+          }}
+        >
+          {isAnswered && (
+            <div>
+              {(
+                <Typography sx={{ p: 1 }} variant="body1" color="initial">
+                  {noUserSelectOption2}/{totalVotes} votes,
+                  {percent2}%
+                </Typography>
+              )}
+            </div>
+          )}
+        </Box>
+      </Box>
     </Container>
   );
 };
